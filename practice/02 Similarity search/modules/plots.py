@@ -174,7 +174,7 @@ def mplot2d(x, y, plot_title=None, x_title=None, y_title=None, trace_titles=None
     fig.show(renderer="colab")
 
 
-def plot_bestmatch_data(ts, query):
+def plot_bestmatch_data(ts, query, show = True):
     """
     Visualize the input data (time series and query) for the best match task.
 
@@ -220,7 +220,9 @@ def plot_bestmatch_data(ts, query):
                       showlegend=False,
                       title_x=0.5)
 
-    fig.show(renderer="colab")
+    if show:
+      fig.show(renderer="colab")
+    return fig
 
 
 def plot_bestmatch_results(ts, query, bestmatch_results):
@@ -239,7 +241,15 @@ def plot_bestmatch_results(ts, query, bestmatch_results):
         The output data found by the best match algorithm.  
     """
 
-    # INSERT YOUR CODE
+    # INSERT YOUR 
+    for i in range(len(bestmatch_results['index'])):
+      index = bestmatch_results['index'][i]
+      distance = bestmatch_results['distance'][i]
+      print('index:', index, 'distance:', distance)
+      fig = plot_bestmatch_data(ts, query, show = False)
+      fig.add_trace(go.Scatter(x=np.arange(index,index+len(query)), y=ts[index:index+len(query)], line=dict(color=px.colors.qualitative.Plotly[1])),
+                  row=1, col=2)
+      fig.show(renderer="colab")
 
 
 def pie_chart(labels, values, plot_title='Pie chart'):

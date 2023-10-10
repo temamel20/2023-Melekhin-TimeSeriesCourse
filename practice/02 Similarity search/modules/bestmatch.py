@@ -3,6 +3,7 @@ import copy
 
 from modules.utils import *
 from modules.metrics import *
+from tqdm import tqdm
 
 
 class BestMatchFinder:
@@ -42,6 +43,8 @@ class BestMatchFinder:
         self.top_k = top_k
         self.normalize = normalize
         self.r = r
+        self.distances = []
+        self.bestmatch = None
 
 
     def _apply_exclusion_zone(self, a, idx, excl_zone):
@@ -72,7 +75,7 @@ class BestMatchFinder:
         return a
 
 
-    def _top_k_match(self, distances, m, bsf, excl_zone):
+    def _top_k_match(self,  excl_zone = 1):
         """
         Find the top-k match subsequences.
         
@@ -95,11 +98,12 @@ class BestMatchFinder:
         best_match_results: dict
             Dictionary containing results of algorithm.
         """
-        
-        data_len = len(distances)
+        N, m = self.ts_data.shape
+        bsf = max(self.distances)
+        data_len = len(self.distances)
         top_k_match = []
 
-        distances = np.copy(distances)
+        distances = np.copy(self.distances)
         top_k_match_idx = []
         top_k_match_dist = []
 
@@ -150,7 +154,12 @@ class NaiveBestMatchFinder(BestMatchFinder):
         else:
             excl_zone = int(np.ceil(m / self.excl_zone_denom))
         
-        # INSERT YOUR CODE
+        for C in tqdm(self.ts_data):
+          dist = DTW_distance(self.query, C, self.r)
+          self.distances.append(dist)
+          if dist < bsf:
+            bsf = dist
+            self.bestmatch = C
 
         return self.bestmatch
 
